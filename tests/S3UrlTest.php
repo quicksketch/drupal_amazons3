@@ -75,6 +75,16 @@ class S3UrlTest extends \PHPUnit_Framework_TestCase {
    * @covers Drupal\amazons3\S3Url::factory
    */
   public function testFactoryInvalidUrl() {
-    $url = S3Url::factory(':');
+    S3Url::factory(':');
+  }
+
+  /**
+   * @covers Drupal\amazons3\S3Url::factory
+   */
+  public function testFactoryImageStyle() {
+    $url = S3Url::factory('s3://styles/style_name/s3/bucket/key/path/sample.png');
+    $this->assertInstanceOf('Drupal\amazons3\S3Url', $url);
+    $this->assertEquals($url->getBucket(), 'bucket');
+    $this->assertEquals($url->getKey(), 'styles/style_name/key/path/sample.png');
   }
 }

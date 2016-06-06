@@ -79,8 +79,7 @@ class S3Url extends Url {
    *
    * @return Url
    */
-  public function setPath($path)
-  {
+  public function setPath($path) {
     if (is_array($path)) {
       $path = '/' . implode('/', $path);
     }
@@ -119,17 +118,37 @@ class S3Url extends Url {
    * @return static
    *   An S3Url.
    */
-  public static function factory($url, StreamWrapperConfiguration $config = null) {
-    !$config ? $bucket = null : $bucket = $config->getBucket();
+  public static function factory($url, StreamWrapperConfiguration $config = NULL) {
+    $defaults = array(
+      'scheme' => 's3',
+      'host' => $config ? $config->getBucket() : NULL,
+      'path' => NULL,
+      'port' => NULL,
+      'query' => NULL,
+      'user' => NULL,
+      'pass' => NULL,
+      'fragment' => NULL,
+    );
 
-    $defaults = array('scheme' => 's3', 'host' => $bucket, 'path' => null, 'port' => null, 'query' => null,
-      'user' => null, 'pass' => null, 'fragment' => null);
-
-    if (false === ($parts = parse_url($url))) {
+    $parts = parse_url($url);
+    if ($parts === FALSE) {
       throw new \InvalidArgumentException('Was unable to parse malformed url: ' . $url);
     }
-
     $parts += $defaults;
+
+    // Image styles are constructed as
+    // "s3://styles/[style_name]/s3/[bucket_name]/[path]".
+    // Correct this path so that the bucket is the host, and reinsert "styles/"
+    // as part of the path.
+    if ($parts['host'] === 'styles') {
+      $path_array = explode('/', substr($parts['path'], 1));
+      $path = '/styles/';
+      $path .= array_shift($path_array); // [style_name].
+      array_shift($path_array); // "s3".
+      $parts['host'] = array_shift($path_array); // [bucket_name].
+      $path .= '/' . implode('/', $path_array); // Remainder of the path.
+      $parts['path'] = $path;
+    }
 
     return new static($parts['host'], substr($parts['path'], 1));
   }
