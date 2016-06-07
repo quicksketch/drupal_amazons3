@@ -25,7 +25,7 @@ class S3ClientTest extends GuzzleTestCase {
       'amazons3_region' => 'region',
     ]);
     DrupalS3Client::resetCalled();
-    $client = DrupalS3Client::factory(array(), 'fake-bucket');
+    $client = DrupalS3Client::factory();
     $this->assertInstanceOf('Aws\S3\S3Client', $client);
     $this->assertEquals('key', $client->getCredentials()->getAccessKeyId());
     $this->assertEquals('secret', $client->getCredentials()->getSecretKey());

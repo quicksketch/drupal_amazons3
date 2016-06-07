@@ -484,7 +484,7 @@ function amazons3_file_entity_upload_destination_uri_alter(&$result, array $para
     try {
       $url = S3Url::factory($result);
       $bucket = $url->getBucket();
-      $s3 = S3Client::factory(array(), $bucket);
+      $s3 = S3Client::factory();
       S3Client::validateBucketExists($bucket, $s3, new \Drupal\amazons3\Cache());
     }
     catch (\InvalidArgumentException $e) {
@@ -523,7 +523,7 @@ function amazons3_file_stream_wrapper_uri_normalize_alter(&$uri, $scheme, $targe
       // without a bucket, like s3://image.jpg. If image.jpg is not a bucket, we
       // assume that image.jpg is supposed to be created in the default bucket.
       $bucket = $url->getBucket();
-      $s3 = S3Client::factory(array(), $bucket);
+      $s3 = S3Client::factory();
       S3Client::validateBucketExists($bucket, $s3, new \Drupal\amazons3\Cache());
     }
     catch (\InvalidArgumentException $e) {
@@ -656,7 +656,7 @@ function amazons3_form_bucket_validate(array &$element, array &$form_state, arra
   }
 
   try {
-    $s3 = S3Client::factory($config, $bucket);
+    $s3 = S3Client::factory($config);
     S3Client::validateBucketExists($bucket, $s3);
   }
   catch (S3ConnectValidationException $e) {
